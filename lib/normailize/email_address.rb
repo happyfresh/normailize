@@ -1,3 +1,6 @@
+require 'net/http'
+require 'json'
+
 module Normailize
 
   # Public: Class to represent an email address.
@@ -32,9 +35,10 @@ module Normailize
     # address - An email address
     #
     # Raises ArgumentError if email address does not have correct format
-    def initialize(address)
+    def initialize(address, options={})
       raise ArgumentError.new("Does not look like a valid email address") unless address =~ EMAIL_ADDRESS_REGEX
       @address = address
+      @options = options
       @username, @domain = @address.split('@', 2)
       normalize!
     end
@@ -53,6 +57,13 @@ module Normailize
       @username = @username.split('+', 2).first
     end
 
+    # Internal: Removes everything after the first occurrence of a hyphen sign in the username parts
+    #
+    # Returns nothing
+    def remove_hyphen_part
+      @username = @username.split('-', 2).first
+    end
+
     # Internal: Lowercase characthers in username part
     #
     # Returns nothing
@@ -67,7 +78,9 @@ module Normailize
     #
     # Returns Normailize::Provider
     def provider
-      Provider.factory(@domain)
+      domain = @domain
+      domain = @provider_domain if @provider_domain
+      Provider.factory(domain)
     end
 
     # Public: Get normalized email address
@@ -93,7 +106,34 @@ module Normailize
     # Returns nothing
     def normalize!
       @domain.downcase!
+      detect_provider if @options[:detect_provider]
       provider.modifications.each { |m| self.send(m) if self.respond_to?(m) }
+    end
+
+    def detect_provider
+      return if Provider.known_domains.include?(@domain)
+
+      res = Net::HTTP.get_response(URI("http://enclout.com/api/v1/dns/show.json?url=#{@address}"))
+      json_body = JSON.load(res.body) if res.is_a?(Net::HTTPSuccess)
+
+      if json_body['error']
+        # TODO handle error here
+      else
+        dns_entries = json_body['dns_entries']
+        mx_hash = dns_entries.find { |h| h['Type'] == 'MX' }
+        mx = mx_hash['RData'] if mx_hash
+        if mx
+          # Google Apps for Work
+          if /aspmx.*google.*\.com\.?$/i =~ mx
+            @provider_domain = 'gmail.com'
+          # FastMail - https://www.fastmail.com/help/receive/domains.html
+          elsif /\.messagingengine\.com\.?$/i =~ mx
+            @provider_domain = 'fastmail.com'
+          end
+        else
+          # TODO handle error here
+        end
+      end
     end
   end
 end

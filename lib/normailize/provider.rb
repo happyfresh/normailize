@@ -11,16 +11,30 @@ module Normailize
     # generic provider
     def self.factory(domain)
       case domain
-      when *Gmail.domains   then Gmail.new(domain)
-      when *Live.domains    then Live.new(domain)
-      when *Hotmail.domains then Hotmail.new(domain)
+      when *Gmail.domains    then Gmail.new(domain)
+      when *Live.domains     then Live.new(domain)
+      when *Hotmail.domains  then Hotmail.new(domain)
+      when *Yahoo.domains    then Yahoo.new(domain)
+      when *Fastmail.domains then Fastmail.new(domain)
       else Generic.new(domain)
       end
     end
 
     def self.included(base)
       class << base; attr_accessor :domains, :modifications end
-      base.extend(ClassMethods)    
+      base.extend(ClassMethods)
+    end
+
+    def self.known_domains
+      domains = []
+      # providers = self.constants.select {|c| self.const_get(c).is_a? Class}
+      self.constants.each do |x|
+        provider = self.const_get(x)
+        next unless provider.is_a?(Class)
+        next if provider == Normailize::Provider::Generic
+        domains += provider.send(:domains)
+      end
+      domains
     end
 
     module ClassMethods
