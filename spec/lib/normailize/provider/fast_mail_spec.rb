@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Normailize::Provider::Hotmail do
-  subject { Normailize::Provider::Hotmail.new('hotmail.com') }
+describe Normailize::Provider::FastMail do
+  subject { Normailize::Provider::FastMail.new('fastmail.com') }
 
   it 'includes the Provider module' do
     expect(subject).to be_a(Normailize::Provider)
@@ -12,15 +12,19 @@ describe Normailize::Provider::Hotmail do
   end
 
   describe '.domains' do
-    subject { Normailize::Provider::Hotmail.domains }
+    subject { Normailize::Provider::FastMail.domains }
 
-    it 'includes hotmail.com' do
-      expect(subject).to include('hotmail.com')
+    it 'includes fastmail.com' do
+      expect(subject).to include('fastmail.com')
+    end
+
+    it 'includes fastmail.fm' do
+      expect(subject).to include('fastmail.fm')
     end
   end
 
   describe '#modifications' do
-    subject { Normailize::Provider::Hotmail.new('hotmail.com').modifications }
+    subject { Normailize::Provider::FastMail.new('FastMail.com').modifications }
 
     it 'lowercases emails' do
       expect(subject).to include(:lowercase)
@@ -38,7 +42,7 @@ describe Normailize::Provider::Hotmail do
   describe '#same_as?' do
     context 'when comparing a provider of the same type' do
       it 'returns true' do
-        expect(subject.same_as?(Normailize::Provider::Hotmail.new('hotmail.com'))).to be(true)
+        expect(subject.same_as?(Normailize::Provider::FastMail.new('FastMail.com'))).to be(true)
       end
     end
 

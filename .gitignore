@@ -4,6 +4,7 @@
 .config
 .yardoc
 .byebug_history
+.rspec_status
 Gemfile.lock
 InstalledFiles
 _yardoc

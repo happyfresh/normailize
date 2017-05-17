@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Normailize::Provider::Hotmail do
-  subject { Normailize::Provider::Hotmail.new('hotmail.com') }
+describe Normailize::Provider::Yahoo do
+  subject { Normailize::Provider::Yahoo.new('yahoo.com') }
 
   it 'includes the Provider module' do
     expect(subject).to be_a(Normailize::Provider)
@@ -12,15 +12,23 @@ describe Normailize::Provider::Hotmail do
   end
 
   describe '.domains' do
-    subject { Normailize::Provider::Hotmail.domains }
+    subject { Normailize::Provider::Yahoo.domains }
 
     it 'includes hotmail.com' do
-      expect(subject).to include('hotmail.com')
+      expect(subject).to include('yahoo.com')
+    end
+
+    it 'includes hotmail.com' do
+      expect(subject).to include('yahoo.co.id')
+    end
+
+    it 'includes hotmail.com' do
+      expect(subject).to include('yahoo.com.my')
     end
   end
 
   describe '#modifications' do
-    subject { Normailize::Provider::Hotmail.new('hotmail.com').modifications }
+    subject { Normailize::Provider::Yahoo.new('yahoo.com').modifications }
 
     it 'lowercases emails' do
       expect(subject).to include(:lowercase)
@@ -30,15 +38,19 @@ describe Normailize::Provider::Hotmail do
       expect(subject).to_not include(:remove_dots)
     end
 
-    it 'removes plus parts' do
-      expect(subject).to include(:remove_plus_part)
+    it 'does not remove plus parts' do
+      expect(subject).to_not include(:remove_plus_part)
+    end
+
+    it 'removes hyphen parts' do
+      expect(subject).to include(:remove_hyphen_part)
     end
   end
 
   describe '#same_as?' do
     context 'when comparing a provider of the same type' do
       it 'returns true' do
-        expect(subject.same_as?(Normailize::Provider::Hotmail.new('hotmail.com'))).to be(true)
+        expect(subject.same_as?(Normailize::Provider::Yahoo.new('yahoo.com'))).to be(true)
       end
     end
 
