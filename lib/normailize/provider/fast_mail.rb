@@ -2,7 +2,7 @@ module Normailize
   module Provider
 
     # Internal: A provider to represent Gmail and Googlemail
-    class Fastmail
+    class FastMail
       include Normailize::Provider
 
       # Fastmail addresses work on both fastmail.com and fastmail.fm

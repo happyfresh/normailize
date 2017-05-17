@@ -2,7 +2,6 @@ require 'net/http'
 require 'json'
 
 module Normailize
-
   # Public: Class to represent an email address.
   #
   # Normalizes email addresses according to the rules given by the provider.
@@ -33,10 +32,12 @@ module Normailize
     # Public: Class initializer
     #
     # address - An email address
+    # options - hash
+    #           :detect_provider - default true, mx lookup
     #
     # Raises ArgumentError if email address does not have correct format
-    def initialize(address, options={})
-      raise ArgumentError.new("Does not look like a valid email address") unless address =~ EMAIL_ADDRESS_REGEX
+    def initialize(address, options = { detect_provider: true })
+      raise ArgumentError, 'Does not look like a valid email address' unless address =~ EMAIL_ADDRESS_REGEX
       @address = address
       @options = options
       @username, @domain = @address.split('@', 2)
@@ -47,17 +48,19 @@ module Normailize
     #
     # Returns nothing
     def remove_dots
-      @username.gsub!('.', '')
+      @username.delete!('.')
     end
 
-    # Internal: Removes everything after the first occurrence of a plus sign in the username parts
+    # Internal: Removes everything after the first occurrence of a plus sign in
+    # the username parts
     #
     # Returns nothing
     def remove_plus_part
       @username = @username.split('+', 2).first
     end
 
-    # Internal: Removes everything after the first occurrence of a hyphen sign in the username parts
+    # Internal: Removes everything after the first occurrence of a hyphen sign
+    # in the username parts
     #
     # Returns nothing
     def remove_hyphen_part
@@ -73,19 +76,43 @@ module Normailize
 
     # Internal: Get provider instance for email address
     #
-    # If provider is known, it returns a specific provider instance,
-    # otherwise a generic provider instance is returned
+    # If provider is known, it returns a specific provider instance, otherwise
+    # a generic provider instance is returned. When detect_provider is true
+    # then it will check mx record for Google Apps and FastMail custom domain
     #
     # Returns Normailize::Provider
     def provider
-      domain = @domain
-      domain = @provider_domain if @provider_domain
-      Provider.factory(domain)
+      real_domain = @domain
+
+      # Detect provider for Google Apps and Fastmail custom domains
+      if (@options[:detect_provider] && !Provider.known_domains.include?(@domain))
+
+        res = Net::HTTP.get_response(URI("http://enclout.com/api/v1/dns/show.json?url=#{@address}"))
+        json_body = JSON.load(res.body) if res.is_a?(Net::HTTPSuccess)
+
+        if !json_body['error']
+          dns_entries = json_body['dns_entries']
+          mx_hash = dns_entries.find { |h| h['Type'] == 'MX' }
+          mx = mx_hash['RData'] if mx_hash
+          if mx
+            # Google Apps for Work
+            if /aspmx.*google.*\.com\.?$/i =~ mx
+              real_domain = 'gmail.com'
+            # FastMail - https://www.fastmail.com/help/receive/domains.html
+            elsif /\.messagingengine\.com\.?$/i =~ mx
+              real_domain = 'fastmail.com'
+            end
+          end
+        end
+      end
+
+      Provider.factory(real_domain)
     end
 
     # Public: Get normalized email address
     #
-    # Returns normalized address according to the rules specified by the provider.
+    # Returns normalized address according to the rules specified by 
+    # the provider.
     def normalized_address
       "#{@username}@#{@domain}"
     end
@@ -101,39 +128,45 @@ module Normailize
 
     private
 
-    # Internal: Normalize email address according to rules specified by the provider
+    # Internal: Normalize email address according to rules specified by
+    # the provider
     #
     # Returns nothing
     def normalize!
       @domain.downcase!
-      detect_provider if @options[:detect_provider]
       provider.modifications.each { |m| self.send(m) if self.respond_to?(m) }
     end
 
-    def detect_provider
-      return if Provider.known_domains.include?(@domain)
+    # Internal: Detect Google Apps and FastMail domains by mx lookup.
+    # It skips provider check if error occur in mx lookup.
+    # 
+    # Returns real domain
+    # def detect_provider
+    #   Provider.known_domains.include?(@domain) || !@options[:detect_provider]
+    #     return @domain
+    #   end
 
-      res = Net::HTTP.get_response(URI("http://enclout.com/api/v1/dns/show.json?url=#{@address}"))
-      json_body = JSON.load(res.body) if res.is_a?(Net::HTTPSuccess)
+    #   res = Net::HTTP.get_response(URI("http://enclout.com/api/v1/dns/show.json?url=#{@address}"))
+    #   json_body = JSON.load(res.body) if res.is_a?(Net::HTTPSuccess)
 
-      if json_body['error']
-        # TODO handle error here
-      else
-        dns_entries = json_body['dns_entries']
-        mx_hash = dns_entries.find { |h| h['Type'] == 'MX' }
-        mx = mx_hash['RData'] if mx_hash
-        if mx
-          # Google Apps for Work
-          if /aspmx.*google.*\.com\.?$/i =~ mx
-            @provider_domain = 'gmail.com'
-          # FastMail - https://www.fastmail.com/help/receive/domains.html
-          elsif /\.messagingengine\.com\.?$/i =~ mx
-            @provider_domain = 'fastmail.com'
-          end
-        else
-          # TODO handle error here
-        end
-      end
-    end
+    #   if json_body['error']
+    #     return @domain
+    #   else
+    #     dns_entries = json_body['dns_entries']
+    #     mx_hash = dns_entries.find { |h| h['Type'] == 'MX' }
+    #     mx = mx_hash['RData'] if mx_hash
+    #     if mx
+    #       # Google Apps for Work
+    #       if /aspmx.*google.*\.com\.?$/i =~ mx
+    #         return 'gmail.com'
+    #       # FastMail - https://www.fastmail.com/help/receive/domains.html
+    #       elsif /\.messagingengine\.com\.?$/i =~ mx
+    #         return 'fastmail.com'
+    #       end
+    #     else
+    #       return @domain
+    #     end
+    #   end
+    # end
   end
 end
