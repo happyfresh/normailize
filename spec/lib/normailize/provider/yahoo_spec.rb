@@ -14,16 +14,20 @@ describe Normailize::Provider::Yahoo do
   describe '.domains' do
     subject { Normailize::Provider::Yahoo.domains }
 
-    it 'includes hotmail.com' do
+    it 'includes yahoo.com' do
       expect(subject).to include('yahoo.com')
     end
 
-    it 'includes hotmail.com' do
+    it 'includes yahoo.co.id' do
       expect(subject).to include('yahoo.co.id')
     end
 
-    it 'includes hotmail.com' do
+    it 'includes yahoo.com.my' do
       expect(subject).to include('yahoo.com.my')
+    end
+
+    it 'includes rocketmail.com' do
+      expect(subject).to include('rocketmail.com')
     end
   end
 

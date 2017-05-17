@@ -52,7 +52,8 @@ module Normailize
                   'yahoo.com.tr',
                   'yahoo.co.uk',
                   'yahoo.com',
-                  'yahoo.com.vn'
+                  'yahoo.com.vn',
+                  'rocketmail.com'
 
       # Use hyphens - http://www.cnet.com/forums/discussions/did-yahoo-break-disposable-email-addresses-mail-plus-395088/
       set_modifications :lowercase, :remove_hyphen_part
