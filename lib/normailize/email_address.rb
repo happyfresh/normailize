@@ -82,33 +82,12 @@ module Normailize
     #
     # Returns Normailize::Provider
     def provider
-      real_domain = @domain
-
       # Detect provider for Google Apps and Fastmail custom domains
       if (@options[:detect_provider] && !Provider.known_domains.include?(@domain))
-        @valid_mx = false
-
-        res = Net::HTTP.get_response(URI("http://enclout.com/api/v1/dns/show.json?url=#{@address}"))
-        json_body = JSON.load(res.body) if res.is_a?(Net::HTTPSuccess)
-
-        if !json_body['error']
-          dns_entries = json_body['dns_entries']
-          mx_hash = dns_entries.find { |h| h['Type'] == 'MX' }
-          mx = mx_hash['RData'] if mx_hash
-          if mx
-            @valid_mx = true
-            # Google Apps for Work
-            if /aspmx.*google.*\.com\.?$/i =~ mx
-              real_domain = 'gmail.com'
-            # FastMail - https://www.fastmail.com/help/receive/domains.html
-            elsif /\.messagingengine\.com\.?$/i =~ mx
-              real_domain = 'fastmail.com'
-            end
-          end
-        end
+        @valid_mx, real_domain = Util::MxCheck.detect_provider(@domain)
       end
 
-      Provider.factory(real_domain)
+      Provider.factory(real_domain || @domain)
     end
 
     # Public: Get normalized email address
