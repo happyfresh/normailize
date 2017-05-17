@@ -17,7 +17,7 @@ module Normailize
   #   address = Normailize::EmailAddress.new('Jo.Hn+sneaky@gmail.com')
   #   address.normalized_address # => john@gmail.com
   class EmailAddress
-    attr_reader :address, :username, :domain
+    attr_reader :address, :username, :domain, :valid_mx
 
     # Private: Simple regex to validate format of an email address
     #
@@ -86,6 +86,7 @@ module Normailize
 
       # Detect provider for Google Apps and Fastmail custom domains
       if (@options[:detect_provider] && !Provider.known_domains.include?(@domain))
+        @valid_mx = false
 
         res = Net::HTTP.get_response(URI("http://enclout.com/api/v1/dns/show.json?url=#{@address}"))
         json_body = JSON.load(res.body) if res.is_a?(Net::HTTPSuccess)
@@ -95,6 +96,7 @@ module Normailize
           mx_hash = dns_entries.find { |h| h['Type'] == 'MX' }
           mx = mx_hash['RData'] if mx_hash
           if mx
+            @valid_mx = true
             # Google Apps for Work
             if /aspmx.*google.*\.com\.?$/i =~ mx
               real_domain = 'gmail.com'
@@ -136,37 +138,5 @@ module Normailize
       @domain.downcase!
       provider.modifications.each { |m| self.send(m) if self.respond_to?(m) }
     end
-
-    # Internal: Detect Google Apps and FastMail domains by mx lookup.
-    # It skips provider check if error occur in mx lookup.
-    # 
-    # Returns real domain
-    # def detect_provider
-    #   Provider.known_domains.include?(@domain) || !@options[:detect_provider]
-    #     return @domain
-    #   end
-
-    #   res = Net::HTTP.get_response(URI("http://enclout.com/api/v1/dns/show.json?url=#{@address}"))
-    #   json_body = JSON.load(res.body) if res.is_a?(Net::HTTPSuccess)
-
-    #   if json_body['error']
-    #     return @domain
-    #   else
-    #     dns_entries = json_body['dns_entries']
-    #     mx_hash = dns_entries.find { |h| h['Type'] == 'MX' }
-    #     mx = mx_hash['RData'] if mx_hash
-    #     if mx
-    #       # Google Apps for Work
-    #       if /aspmx.*google.*\.com\.?$/i =~ mx
-    #         return 'gmail.com'
-    #       # FastMail - https://www.fastmail.com/help/receive/domains.html
-    #       elsif /\.messagingengine\.com\.?$/i =~ mx
-    #         return 'fastmail.com'
-    #       end
-    #     else
-    #       return @domain
-    #     end
-    #   end
-    # end
   end
 end
