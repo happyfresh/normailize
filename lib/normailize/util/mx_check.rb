@@ -18,8 +18,12 @@ module Normailize
            # Google Apps for Work
           if /aspmx.*google.*\.com\.?$/i =~ mx
             return true, 'gmail.com'
+          # FastMail domain
           elsif /\.messagingengine\.com\.?$/i =~ mx
             return true, 'fastmail.com'
+          # Hotmail domain
+          elsif /\.hotmail\.com\.?$/i =~ mx
+            return true, 'hotmail.com'
           else
             return true, nil
           end

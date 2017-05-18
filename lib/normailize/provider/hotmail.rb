@@ -6,7 +6,7 @@ module Normailize
       include Normailize::Provider
 
       # A hotmail account only works on the hotmail.com domain
-      set_domains 'hotmail.com', 'msn.com'
+      set_domains 'hotmail.com', 'hotmail.com.tw', 'msn.com'
 
       # A normalized hotmail address is lowercased and everything after a plus sign is removed
       set_modifications :lowercase, :remove_plus_part
