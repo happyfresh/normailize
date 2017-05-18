@@ -8,7 +8,6 @@ require 'normailize/provider/gmail'
 require 'normailize/provider/hotmail'
 require 'normailize/provider/live'
 require 'normailize/provider/yahoo'
-require 'normailize/mx_check'
 require 'normailize/util/mx_check'
 
 
