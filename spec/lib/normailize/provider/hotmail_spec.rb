@@ -17,6 +17,10 @@ describe Normailize::Provider::Hotmail do
     it 'includes hotmail.com' do
       expect(subject).to include('hotmail.com')
     end
+
+    it 'includes msn.com' do
+      expect(subject).to include('msn.com')
+    end
   end
 
   describe '#modifications' do
