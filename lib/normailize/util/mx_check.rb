@@ -24,6 +24,9 @@ module Normailize
           # Hotmail domain
           elsif /\.hotmail\.com\.?$/i =~ mx
             return true, 'hotmail.com'
+          # Hotmail domain
+          elsif /\.yahoodns\.net\.?$/i =~ mx
+            return true, 'yahoo.com'
           else
             return true, nil
           end
