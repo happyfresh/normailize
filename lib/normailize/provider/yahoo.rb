@@ -53,6 +53,17 @@ module Normailize
                   'yahoo.co.uk',
                   'yahoo.com',
                   'yahoo.com.vn',
+                  'yahoo.ca',
+                  'yahoo.cn',
+                  'yahoo.co',
+                  'yahoo.co.in',
+                  'yahoo.co.kr',
+                  'yahoo.com',
+                  'yahoo.com.cn',
+                  'yahoo.in',
+                  'yahoogroups.com',
+                  'ymail.com',
+                  'y7mail.com',
                   'rocketmail.com'
 
       # Use hyphens - http://www.cnet.com/forums/discussions/did-yahoo-break-disposable-email-addresses-mail-plus-395088/
