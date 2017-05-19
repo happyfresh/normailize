@@ -16,7 +16,7 @@ module Normailize
         res = Resolv::DNS.new.getresources(domain, Resolv::DNS::Resource::IN::MX)
         res.each do |r|
           mx = r.exchange.to_s
-           # Google Apps for Work
+          # Google Apps for Work
           if /aspmx.*google.*\.com\.?$/i =~ mx
             return true, 'gmail.com'
           # FastMail domain
@@ -30,6 +30,9 @@ module Normailize
           elsif /\.yahoodns\.net\.?$/i =~ mx
             Normailize.logger.info("#{domain} provider is yahoo.com")
             return true, 'yahoo.com'
+          # Might be a valid domain but invalid top or second level
+          elsif 'your-dns-needs-immediate-attention.app' == mx
+            return false, nil
           else
             return true, nil
           end
