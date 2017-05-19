@@ -6,6 +6,7 @@ module Normailize
   module Util
     class MxCheck
 
+
       # Public: Detect if domain has valid MX records and if domain is
       # a Google Apps or FastMail domain
       #
@@ -23,9 +24,11 @@ module Normailize
             return true, 'fastmail.com'
           # Hotmail domain
           elsif /\.hotmail\.com\.?$/i =~ mx
+            Normailize.logger.info("#{domain} provider is hotmail.com")
             return true, 'hotmail.com'
           # Hotmail domain
           elsif /\.yahoodns\.net\.?$/i =~ mx
+            Normailize.logger.info("#{domain} provider is yahoo.com")
             return true, 'yahoo.com'
           else
             return true, nil

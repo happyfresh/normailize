@@ -10,6 +10,7 @@ require 'normailize/provider/live'
 require 'normailize/provider/yahoo'
 require 'normailize/util/mx_check'
 
+require 'logger'
 
 # Development
 begin
@@ -19,5 +20,11 @@ rescue LoadError
 end
 
 module Normailize
-  # Your code goes here...
+  file = file = File.open('detected_domains.log', File::WRONLY | File::APPEND | File::CREAT)
+  @@logger = Logger.new(file)
+  @@logger.level = Logger::INFO
+
+  def self.logger
+    @@logger
+  end
 end
