@@ -9,6 +9,7 @@ require 'normailize/provider/hotmail'
 require 'normailize/provider/live'
 require 'normailize/provider/yahoo'
 require 'normailize/util/mx_check'
+require 'normailize/util/email_validator'
 
 require 'logger'
 

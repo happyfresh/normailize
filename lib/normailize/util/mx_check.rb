@@ -1,11 +1,11 @@
 # https://gist.github.com/afair/2480159
 
 require 'resolv'
+require 'net/smtp'
 
 module Normailize
   module Util
     class MxCheck
-
 
       # Public: Detect if domain has valid MX records and if domain is
       # a Google Apps or FastMail domain
@@ -37,7 +37,36 @@ module Normailize
             return true, nil
           end
         end
+
         return false, nil
+      end
+
+      def self.account_exist?(email)
+        address = email
+        domain = address.split('@').last
+        dns = Resolv::DNS.new
+
+        puts "Resolving MX records for #{domain}..."
+        mx_records = dns.getresources domain, Resolv::DNS::Resource::IN::MX
+        mx_server  = mx_records.first.exchange.to_s
+        puts "Connecting to #{mx_server}..."
+
+        Net::SMTP.start mx_server, 25 do |smtp|
+          smtp.helo "loldomain.com"
+          smtp.mailfrom "test@loldomain.com"
+
+          puts "Pinging #{address}..."
+
+          puts "-" * 50
+
+          begin
+            smtp.rcptto address
+            puts "Address probably exists."
+          rescue Net::SMTPFatalError => err
+            puts "Address probably doesn't exist."
+          end
+        end
+
       end
 
     end

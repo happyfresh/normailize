@@ -119,7 +119,7 @@ describe Normailize::EmailAddress do
 
     context 'when address is an unknown provider' do
       it 'returns instance of Generic provider' do
-        expect(Normailize::EmailAddress.new('john@somewhere.co').provider).to be_a(Normailize::Provider::Generic)
+        expect(Normailize::EmailAddress.new('john@lazada.co.id').provider).to be_a(Normailize::Provider::Generic)
       end
     end
   end
