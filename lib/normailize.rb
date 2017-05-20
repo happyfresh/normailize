@@ -1,6 +1,7 @@
 require 'normailize/version'
 require 'normailize/email_address'
 require 'normailize/popular_domains'
+require 'normailize/disposable_emails'
 require 'normailize/provider'
 require 'normailize/provider/fast_mail'
 require 'normailize/provider/generic'

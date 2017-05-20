@@ -18,17 +18,8 @@ module Normailize
   #   address = Normailize::EmailAddress.new('Jo.Hn+sneaky@gmail.com')
   #   address.normalized_address # => john@gmail.com
   class EmailAddress
-    attr_reader :address, :username, :domain, :valid_mx, :did_you_mean, :deliverability
-
-    # Private: Simple regex to validate format of an email address
-    #
-    # We're deliberately ignoring a whole range of special and restricted chars
-    # for the sake of simplicity. This should match 99.99% of all the email
-    # addresses out there. If you allow comments (parentheses enclosed) in the
-    # local or domain part of your email addresses, make sure to strip them for
-    # normalization purposes. For '@' in the local part to be allowed, split
-    # local and domain part at the _last_ occurrence of the @-symbol.
-    EMAIL_ADDRESS_REGEX = /\A([a-z0-9_\-][a-z0-9_\-\+\.]{,62})?[a-z0-9_\-]@(([a-z0-9]|[a-z0-9][a-z0-9\-]*[a-z0-9])\.)+[a-z]{2,}\z/i
+    attr_reader :address, :catch_all, :deliverability, :disposable,
+                :did_you_mean, :domain, :username, :valid_mx
 
     # Public: Class initializer
     #
@@ -38,17 +29,16 @@ module Normailize
     #
     # Raises ArgumentError if email address does not have correct format
     def initialize(address, options = { validate_account: true })
-      raise ArgumentError, 'Does not look like a valid email address' unless address =~ EMAIL_ADDRESS_REGEX
       @address = address
       @options = options
       @username, @domain = @address.split('@', 2)
 
-      # if !Provider.known_domains.include?(@domain, options)
       ev = Util::EmailValidator.new(@address, options)
       @did_you_mean = ev.did_you_mean
       @deliverability = ev.deliverability
       @detected_provider = ev.provider
-      # end
+      @catch_all = ev.catch_all
+      @disposable = ev.disposable
 
       normalize! unless @did_you_mean
     end
@@ -140,7 +130,7 @@ module Normailize
         distance = jarow.getDistance(@domain, domain)
         result.update(distance => domain )
       end
-      
+
       p result
     end
   end
