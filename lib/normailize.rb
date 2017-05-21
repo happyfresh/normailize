@@ -22,7 +22,7 @@ rescue LoadError
 end
 
 module Normailize
-  file = file = File.open('detected_domains.log', File::WRONLY | File::APPEND | File::CREAT)
+  file = File.open('detected_domains.log', File::WRONLY | File::APPEND | File::CREAT)
   @@logger = Logger.new(file)
   @@logger.level = Logger::INFO
 

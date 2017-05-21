@@ -126,12 +126,10 @@ module Normailize
       @domain.downcase!
       jarow = FuzzyStringMatch::JaroWinkler.create(:native)
       result = {}
-      DOMAINS.each do |domain|
+      PUBLIC_DOMAINS.each do |domain|
         distance = jarow.getDistance(@domain, domain)
         result.update(distance => domain )
       end
-
-      p result
     end
   end
 end
