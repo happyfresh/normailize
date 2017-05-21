@@ -1,12 +1,12 @@
 module Normailize
   module Provider
 
-    # Internal: A provider to represent Hotmail
-    class Hotmail
+    # Internal: A provider to represent Live
+    class Microsoft
       include Normailize::Provider
 
-      # A hotmail account only works on the hotmail.com domain
-      set_domains 'hotmail.com', 
+      # A Live account only works on the live.com domain
+      set_domains 'hotmail.com',
                   'hotmail.com.tw',
                   'hotmail.ca',
                   'hotmail.ch',
@@ -76,7 +76,7 @@ module Normailize
                   'outlook.sg',
                   'plasa.com'
 
-      # A normalized hotmail address is lowercased and everything after a plus sign is removed
+      # A mormalized Live address is lowercased and everything after a plus sign is removed
       set_modifications :lowercase, :remove_plus_part
     end
   end

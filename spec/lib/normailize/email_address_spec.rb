@@ -2,21 +2,22 @@ require 'spec_helper'
 
 describe Normailize::EmailAddress do
   let(:address) { Normailize::EmailAddress.new('sneaky.dude+lol@gmail.com') }
+  let(:options) { { validate_account: false } }
 
   describe '#initialize' do
     it 'accepts an email address as argument' do
-      expect { Normailize::EmailAddress.new('john@doe.com') }.to_not raise_error
+      expect { Normailize::EmailAddress.new('john@doe.com', options) }.to_not raise_error
     end
 
     context 'when email address is not valid' do
       it 'raises an exception' do
-        expect { Normailize::EmailAddress.new('not an @email address. sorry!') }.to raise_error(ArgumentError)
+        expect { Normailize::EmailAddress.new('not an @email address. sorry!', options) }.to raise_error(ArgumentError)
       end
     end
 
     context 'when email address is technically valid, but we do not accept it' do
       it 'raises an exception' do
-        expect { Normailize::EmailAddress.new('" fairly.@.unusual.example.com"(&a_comment_making_it_extralong!)@[IPv6:2001:db8:23:::42]') }.to raise_error(ArgumentError)
+        expect { Normailize::EmailAddress.new('" fairly.@.unusual.example.com"(&a_comment_making_it_extralong!)@[IPv6:2001:db8:23:::42]', options) }.to raise_error(ArgumentError)
       end
     end
   end
@@ -33,7 +34,7 @@ describe Normailize::EmailAddress do
       }
 
       emails.each_pair do |sneaky, expected_normalization|
-        expect(Normailize::EmailAddress.new(sneaky).normalized_address).to eq(expected_normalization)
+        expect(Normailize::EmailAddress.new(sneaky, options).normalized_address).to eq(expected_normalization)
       end
     end
   end
@@ -41,19 +42,19 @@ describe Normailize::EmailAddress do
   describe '#provider' do
     context 'when address is a @gmail.com' do
       it 'returns instance of Gmail provider' do
-        expect(Normailize::EmailAddress.new('john@gmail.com').provider).to be_a(Normailize::Provider::Gmail)
+        expect(Normailize::EmailAddress.new('john@gmail.com', options).provider).to be_a(Normailize::Provider::Gmail)
       end
     end
 
     context 'when address is a @googlemail.com' do
       it 'returns instance of Gmail provider' do
-        expect(Normailize::EmailAddress.new('john@googlemail.com').provider).to be_a(Normailize::Provider::Gmail)
+        expect(Normailize::EmailAddress.new('john@googlemail.com', options).provider).to be_a(Normailize::Provider::Gmail)
       end
     end
 
     context 'when address is a @google.com' do
       it 'returns instance of Gmail provider' do
-        expect(Normailize::EmailAddress.new('john@google.com').provider).to be_a(Normailize::Provider::Gmail)
+        expect(Normailize::EmailAddress.new('john@google.com', options).provider).to be_a(Normailize::Provider::Gmail)
       end
     end
 
@@ -64,62 +65,62 @@ describe Normailize::EmailAddress do
     end
 
     context 'when address is a @live.com' do
-      it 'returns instance of Live provider' do
-        expect(Normailize::EmailAddress.new('john@live.com').provider).to be_a(Normailize::Provider::Live)
+      it 'returns instance of Microsoft provider' do
+        expect(Normailize::EmailAddress.new('john@live.com', options).provider).to be_a(Normailize::Provider::Microsoft)
       end
     end
 
     context 'when address is a @outlook.com' do
-      it 'returns instance of Live provider' do
-        expect(Normailize::EmailAddress.new('john@outlook.com').provider).to be_a(Normailize::Provider::Live)
+      it 'returns instance of Microsoft provider' do
+        expect(Normailize::EmailAddress.new('john@outlook.com', options).provider).to be_a(Normailize::Provider::Microsoft)
       end
     end
 
     context 'when address is a @hotmail.com' do
-      it 'returns instance of Hotmail provider' do
-        expect(Normailize::EmailAddress.new('john@hotmail.com').provider).to be_a(Normailize::Provider::Hotmail)
+      it 'returns instance of Microsoft provider' do
+        expect(Normailize::EmailAddress.new('john@hotmail.com', options).provider).to be_a(Normailize::Provider::Microsoft)
       end
     end
 
     context 'when address is a yahoo domains' do
       it 'returns instance of Yahoo provider' do
-        expect(Normailize::EmailAddress.new('john@yahoo.co.id').provider).to be_a(Normailize::Provider::Yahoo)
+        expect(Normailize::EmailAddress.new('john@yahoo.co.id', options).provider).to be_a(Normailize::Provider::Yahoo)
       end
     end
 
     context 'when address is a yahoo domains' do
       it 'returns instance of Yahoo provider' do
-        expect(Normailize::EmailAddress.new('john@yahoo.com').provider).to be_a(Normailize::Provider::Yahoo)
+        expect(Normailize::EmailAddress.new('john@yahoo.com', options).provider).to be_a(Normailize::Provider::Yahoo)
       end
     end
 
     context 'when address is a yahoo domains' do
       it 'returns instance of Yahoo provider' do
-        expect(Normailize::EmailAddress.new('john@yahoo.com.my').provider).to be_a(Normailize::Provider::Yahoo)
+        expect(Normailize::EmailAddress.new('john@yahoo.com.my', options).provider).to be_a(Normailize::Provider::Yahoo)
       end
     end
 
     context 'when address is a yahoo domains' do
       it 'returns instance of Yahoo provider' do
-        expect(Normailize::EmailAddress.new('john@yahoo.co.th').provider).to be_a(Normailize::Provider::Yahoo)
+        expect(Normailize::EmailAddress.new('john@yahoo.co.th', options).provider).to be_a(Normailize::Provider::Yahoo)
       end
     end
 
     context 'when address is a @fastmail.com' do
       it 'returns instance of FastMail provider' do
-        expect(Normailize::EmailAddress.new('john@fastmail.com').provider).to be_a(Normailize::Provider::FastMail)
+        expect(Normailize::EmailAddress.new('john@fastmail.com', options).provider).to be_a(Normailize::Provider::FastMail)
       end
     end
 
     context 'when address is a @fastmail.fm' do
       it 'returns instance of FastMail provider' do
-        expect(Normailize::EmailAddress.new('john@fastmail.fm').provider).to be_a(Normailize::Provider::FastMail)
+        expect(Normailize::EmailAddress.new('john@fastmail.fm', options).provider).to be_a(Normailize::Provider::FastMail)
       end
     end
 
     context 'when address is an unknown provider' do
       it 'returns instance of Generic provider' do
-        expect(Normailize::EmailAddress.new('john@lazada.co.id').provider).to be_a(Normailize::Provider::Generic)
+        expect(Normailize::EmailAddress.new('john@lazada.co.id', options).provider).to be_a(Normailize::Provider::Generic)
       end
     end
   end
@@ -142,14 +143,19 @@ describe Normailize::EmailAddress do
           'John+lol+wtf@fastmail.com' => 'jOhn+lol@fastmail.com',
           'john@hotmail.com'          => 'john@hotmail.com',
           'john-lol@yahoo.com'        => 'john@yahoo.com',
-          'john-lol@yahoo.co.id'      => 'john@yahoo.co.id',
-          'John+lol+wtf@blinc.co'     => 'jOhn+lol@blinc.co', # Google Apps
+          'john-lol@yahoo.co.id'      => 'john@yahoo.co.id'
         }
 
         emails.each_pair do |e1, e2|
-          expect(Normailize::EmailAddress.new(e1)
-          .same_as?(Normailize::EmailAddress.new(e2))).to be(true)
+          expect(Normailize::EmailAddress.new(e1, options)
+            .same_as?(Normailize::EmailAddress.new(e2, options)))
+            .to be(true)
         end
+
+        # Google Apps custom domain
+        expect(Normailize::EmailAddress.new('John+lol+wtf@blinc.co')
+          .same_as?(Normailize::EmailAddress.new('jOhn@blinc.co')))
+          .to be(true)
       end
     end
 
@@ -163,8 +169,8 @@ describe Normailize::EmailAddress do
         }
 
         emails.each_pair do |e1, e2|
-          expect(Normailize::EmailAddress.new(e1)
-          .same_as?(Normailize::EmailAddress.new(e2))).to be(false)
+          expect(Normailize::EmailAddress.new(e1, options)
+          .same_as?(Normailize::EmailAddress.new(e2, options))).to be(false)
         end
       end
     end

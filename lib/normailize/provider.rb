@@ -11,11 +11,10 @@ module Normailize
     # generic provider
     def self.factory(domain)
       case domain
-      when *Gmail.domains    then Gmail.new(domain)
-      when *Live.domains     then Live.new(domain)
-      when *Hotmail.domains  then Hotmail.new(domain)
-      when *Yahoo.domains    then Yahoo.new(domain)
-      when *FastMail.domains then FastMail.new(domain)
+      when *Gmail.domains     then Gmail.new(domain)
+      when *Yahoo.domains     then Yahoo.new(domain)
+      when *Microsoft.domains then Microsoft.new(domain)
+      when *FastMail.domains  then FastMail.new(domain)
       else Generic.new(domain)
       end
     end
