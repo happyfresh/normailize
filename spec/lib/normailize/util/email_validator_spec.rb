@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Normailize::EmailAddress do
+describe Normailize::Util::EmailValidator do
 
   context 'when validate_account is true' do
     let(:options) { { validate_account: true } }
@@ -66,6 +66,27 @@ describe Normailize::EmailAddress do
         end
       end
 
+    end
+
+    describe '#normalized_address' do
+      context 'given disposable email' do
+        it 'returns false' do
+          expect(Normailize::Util::EmailValidator.new('temp@mailinator.com', options).valid?)
+          .to eq(false)
+        end
+      end
+
+      context 'given invalid email' do
+        it 'returns false' do
+          expect(Normailize::Util::EmailValidator.new('nonexistsfdnvelajkfdsb@gmail.com', options).valid?)
+          .to eq(false)
+        end
+
+        it 'returns false' do
+          expect(Normailize::Util::EmailValidator.new('someemail@aol.com', options).valid?)
+          .to eq(false)
+        end
+      end
     end
   end
 

@@ -49,6 +49,9 @@ module Normailize
         end
       end
 
+      def valid?
+        @deliverability == DELIVERABLE && !@disposable
+      end
 
     private
 
