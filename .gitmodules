@@ -1,0 +1,3 @@
+[submodule "vendor/disposable"]
+	path = vendor/disposable
+	url = git@github.com:andreis/disposable.git
