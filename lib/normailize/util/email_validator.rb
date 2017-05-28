@@ -38,7 +38,7 @@ module Normailize
         @catch_all = false
         @disposable = false
 
-        if DISPOSABLE_EMAILS.include?(@domain)
+        if DISPOSABLE_DOMAINS.include?(@domain)
           @deliverability = DELIVERABLE
           @catch_all = true
           @disposable = true

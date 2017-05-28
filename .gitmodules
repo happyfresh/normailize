@@ -1,3 +1,6 @@
 [submodule "vendor/disposable"]
 	path = vendor/disposable
 	url = git@github.com:andreis/disposable.git
+[submodule "vendor/burner-email-providers"]
+	path = vendor/burner-email-providers
+	url = git@github.com:wesbos/burner-email-providers.git

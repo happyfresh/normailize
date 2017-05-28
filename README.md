@@ -12,6 +12,10 @@ Normailize currently supports normalizations for the following providers:
 
 If an email is given that is not from any of the known providers, it will not do any normalization and only make a simple comparison between two addresses.
 
+## TODO
+
+1. Emails from [Email On Deck] are not detected as disposable.
+
 ## Installation
 
 Add this line to your application's Gemfile:
