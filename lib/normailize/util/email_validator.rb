@@ -101,7 +101,7 @@ module Normailize
           @valid_mx = true
           # Google Apps for Work
           if /aspmx.*google.*\.com\.?$/i =~ mx
-            @provider = 'googlemail.com'
+            @provider = 'googleapps.com'
           # FastMail @domain
           elsif /\.messagingengine\.com\.?$/i =~ mx
             @provider = 'fastmail.com'

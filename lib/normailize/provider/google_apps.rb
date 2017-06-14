@@ -1,9 +1,9 @@
 module Normailize
   module Provider
-    class GoogleMail
+    class GoogleApps
       include Normailize::Provider
 
-      set_domains 'googlemail.com'
+      set_domains 'googleapps.com'
 
       set_modifications :lowercase, :remove_plus_part
     end
