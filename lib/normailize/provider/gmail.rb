@@ -6,7 +6,7 @@ module Normailize
       include Normailize::Provider
 
       # Gmail addresses work on both gmail.com and googlemail.com
-      set_domains 'gmail.com', 'googlemail.com', 'google.com'
+      set_domains 'gmail.com', 'google.com', 'googlemail.com'
 
       # A normalized Gmail address is lowercased, dots and everything after a
       # plus sign is removed from the username part

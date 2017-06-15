@@ -15,6 +15,7 @@ module Normailize
       when *Yahoo.domains     then Yahoo.new(domain)
       when *Microsoft.domains then Microsoft.new(domain)
       when *FastMail.domains  then FastMail.new(domain)
+      when *GoogleApps.domains then GoogleApps.new(domain)
       else Generic.new(domain)
       end
     end
