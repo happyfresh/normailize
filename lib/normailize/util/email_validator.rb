@@ -8,7 +8,7 @@ module Normailize
     class EmailValidator
 
       attr_reader :catch_all, :deliverability, :did_you_mean, :disposable,
-                  :domain, :provider, :valid_mx
+                  :domain, :provider, :valid_mx, :legible_email
 
       # Private: Simple regex to validate format of an email address
       #
@@ -26,7 +26,9 @@ module Normailize
       UNKNOWN       = 'unknown'.freeze
 
       def initialize(address, options = {})
-        raise ArgumentError, 'Does not look like a valid email address' unless address =~ EMAIL_ADDRESS_REGEX
+        @legible_email = !!(address =~ EMAIL_ADDRESS_REGEX)
+
+        return if not @legible_email
 
         @address = address.downcase
         @username, @domain = @address.split('@', 2)
