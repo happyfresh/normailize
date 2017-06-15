@@ -19,7 +19,7 @@ module Normailize
   #   address.normalized_address # => john@gmail.com
   class EmailAddress
     attr_reader :address, :catch_all, :deliverability, :disposable,
-                :did_you_mean, :domain, :username, :valid_mx
+                :did_you_mean, :domain, :username, :valid_mx, :legible_email
 
     # Public: Class initializer
     #
@@ -34,6 +34,10 @@ module Normailize
       @username, @domain = @address.split('@', 2)
 
       ev = Util::EmailValidator.new(@address, options)
+      @legible_email = ev.legible_email
+
+      return if not @legible_email
+
       @did_you_mean = ev.did_you_mean
       @deliverability = ev.deliverability
       @detected_provider = ev.provider
